@@ -1,0 +1,82 @@
+﻿@page "/"
+@using Models
+@model LiveFire.SignalR.Pages.FireStateModel
+@{
+    ViewData["Title"] = "LiveFire - GPIO Controller";
+}
+<h1 class="display-1 text-center text-light">LiveFire <small class="text-muted">GPIO Controller</small></h1>
+<hr class="text-light">
+<h2 class="mb-3 text-light">Manual Fire Mode</h2>
+<hr class="text-light">
+<div class="d-flex mb-5">
+    <button id="firePinsButton" class="flex-fill btn btn-lg btn-success p-4 fs-1">FIRE PINS NOW</button>
+    <button id="resetPinsButton" class="ms-3 flex-fill btn btn-lg btn-secondary p-4 fs-1">RESET ALL PINS</button>
+</div>
+<div class="row">
+    @{
+        var pinIterator = 0;
+    }
+    @foreach (var pin in FireStateModel.Pins.OrderBy(p => p.DisplayName).Where(p => !p.DisplayName.Contains("Default")))
+    {
+        <div class="col-6">
+            <div class="form-check form-switch mb-3 text-center mx-auto w-75">
+                <div class="d-flex justify-content-between">
+                    <input asp-for="@FireStateModel.Pins[pinIterator].FiringSwitch" data-gpiopin="@pin.GpioPin"
+                    class="form-check-input my-auto@(pin.FiringState == FiringState.Fired ? " bg-danger border-danger" : string.Empty)"
+                    disabled=@(pin.FiringState == FiringState.Fired) checked=@(pin.FiringState != FiringState.Ready)
+                    id="pin-@pin.GpioPin">
+
+                    <label class="form-check-label ms-3 h4 flex-fill" for="pin-@pin.GpioPin">
+                        <span
+                        class="badge w-100 fs-1 p-3@((pin.FiringState == FiringState.Fired) ? " bg-danger" : " bg-secondary")">
+                            @pin.DisplayName
+                        </span>
+                    </label>
+                </div>
+            </div>
+            @* <input hidden asp-for="@FireStateModel.Pins[pin.GpioPin].FiringState"> *@
+        </div>
+        { pinIterator++; }
+    }
+</div>
+<hr class="text-light">
+<h2 class="mb-3 text-light">July 4th, 2022 - Acts 1 and 2</h2>
+<hr class="text-light">
+<div class="d-flex mb-5">
+    <button id="runActsButton" class="flex-fill btn btn-lg btn-success p-4 fs-1">RUN ACTS NOW</button>
+    <button id="resetActsButton" class="ms-3 flex-fill btn btn-lg btn-secondary p-4 fs-1">RESET ALL ACTS</button>
+</div>
+<div class="row">
+    @{
+        var actIterator = 0;
+    }
+    @foreach (var act in FireStateModel.Acts)
+    {
+        <div class="col-6">
+            <div class="form-check form-switch mb-3 text-center mx-auto w-75">
+                <div class="d-flex justify-content-between">
+                    <input data-actnumber="@act.ActNumber" asp-for="@FireStateModel.Acts[actIterator].FiringSwitch"
+                    class="form-check-input my-auto@(act.FiringState == FiringState.Fired ? " bg-danger border-danger" : string.Empty)"
+                    disabled=@(act.FiringState == FiringState.Fired) checked=@(act.FiringState != FiringState.Ready)
+                    id="act-@act.ActNumber">
+
+                    <label class="form-check-label ms-3 h4 flex-fill" for="act-@act.ActNumber">
+                        <span
+                        class="badge w-100 fs-1 p-3@((act.FiringState == FiringState.Fired) ? " bg-danger" : " bg-secondary")">
+                            @act.DisplayName
+                        </span>
+                    </label>
+                </div>
+            </div>
+        </div>
+        { actIterator++; }
+    }
+</div>
+<hr class="text-light">
+<h2 class="mb-3 text-light">Live Show Updates</h2>
+<hr class="text-light">
+<div class="border border-secondary p-3 text-light">
+<pre id="showUpdates">
+    
+</pre>
+</div>

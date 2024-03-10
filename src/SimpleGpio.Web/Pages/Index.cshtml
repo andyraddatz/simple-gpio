@@ -1,0 +1,50 @@
+﻿@page "/"
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@model SimpleGpio.Web.IndexModel
+
+<form method="post">
+    <h1 class="display-1 text-center">GPIO Pin Controller</h1>
+    <button class="btn btn-lg btn-primary w-100 mb-3" type="submit">Set Pins Now</button>
+    <div class="row">
+
+        @foreach (var pinSetting in Model.PinSettingsViewModel.OrderBy(p => p.Key))
+        {
+            <div class="col-6">
+                <div class="form-check form-switch mb-3">
+                    <label class="form-check-label h4 w-100" for="pin-@pinSetting.Key">
+                        <span class="badge w-100 p-2@(pinSetting.Value ? " bg-danger" : " bg-secondary")">
+                            Pin @pinSetting.Key
+                        </span>
+                    </label>
+                    <input asp-for="@Model.PinSettingsViewModel[pinSetting.Key]"
+                    class="form-check-input mt-2@(pinSetting.Value ? " bg-danger border-danger" : string.Empty)"
+                    disabled=@pinSetting.Value checked=@pinSetting.Value id="pin-@pinSetting.Key">
+                </div>
+            </div>
+        }
+    </div>
+    <button asp-page-handler="ResetAllPins" class="btn btn-lg btn-danger w-100 mb-3">Reset All Pins</button>
+</form>
+
+<script type="text/javascript">
+    document.querySelectorAll('input.form-check-input').forEach(switchInput => {
+        switchInput.addEventListener('input', function (event) {
+            const pinSwitch = event.currentTarget;
+            const badge = pinSwitch.previousElementSibling.querySelector('span');
+            if (pinSwitch.checked) {
+                // add styles
+                badge.classList.remove('bg-secondary')
+                badge.classList.add('bg-success')
+                pinSwitch.classList.add('bg-success')
+                pinSwitch.classList.add('border-success')
+            }
+            else {
+                // add styles
+                badge.classList.add('bg-secondary')
+                badge.classList.remove('bg-success')
+                pinSwitch.classList.remove('bg-success')
+                pinSwitch.classList.remove('border-success')
+            }
+        })
+    });
+</script>

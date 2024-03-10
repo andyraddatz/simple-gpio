@@ -1,0 +1,48 @@
+﻿@page "/"
+@using Models
+@using Data
+@inject FiringStateService _service
+
+<PageTitle>LiveFire - GPIO Controller</PageTitle>
+
+@foreach (var act in Acts)
+{
+    <div>Act @act.Key: @act.Value</div>
+}
+
+@foreach (var cue in Cues)
+{
+    <div>Cue @cue.Key: @cue.Value</div>
+}
+
+@code {
+    public Dictionary<int, FiringState> Acts { get; set; } = new();
+    public Dictionary<string, FiringState> Cues { get; set; } = new();
+
+    protected override void OnInitialized()
+    {
+        Acts = _service.GetActStates() ?? new();
+        Cues = _service.GetCueStates() ?? new();
+
+        _service.NotifyCueStateChange += OnCueChange;
+        _service.NotifyActStateChange += OnActChange;
+    }
+
+    public async Task OnCueChange(string address, FiringState state)
+    {
+        await InvokeAsync(() =>
+        {
+            Cues[address] = state;
+            StateHasChanged();
+        });
+    }
+
+    public async Task OnActChange(int act, FiringState state)
+    {
+        await InvokeAsync(() =>
+        {
+            Acts[act] = state;
+            StateHasChanged();
+        });
+    }
+}
