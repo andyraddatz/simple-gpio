@@ -1,0 +1,10 @@
+@page "/"
+@inject SimpleGpioService _gpio
+@rendermode InteractiveServer
+
+<h1>GPIO Pins</h1>
+
+@foreach (var pin in _gpio.Pins)
+{
+    <SimpleGpioPin Pin=pin />
+}

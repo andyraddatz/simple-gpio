@@ -1,6 +1,10 @@
 using SimpleGpio.Components;
+using SimpleGpio.Extensions; // Add the using directive for the namespace that contains the extension method.
 
 var builder = WebApplication.CreateBuilder(args);
+
+// simple-gpio
+builder = builder.AddSimpleGpio();
 
 // Add services to the container.
 builder.Services.AddRazorComponents()

@@ -6,4 +6,4 @@
 - `sudo apt-get install simplegpio`
 - http://localhost:$SIMPLE_GPIO_PORT (random and settable by env var)
 - learn about maintaining an open source project that is useful to somebody
-- 
+- embeddable in other projects, a la Hangfire
