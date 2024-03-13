@@ -1,4 +1,3 @@
-
 <div>
     <label for="pinValueCheckbox-@Pin.PinNumber">Pin @Pin.PinNumber:</label>
     <input type="checkbox" id="pinValueCheckbox-@Pin.PinNumber" @bind="@Pin.PinValue" />
@@ -6,5 +5,5 @@
 
 @code {
     [Parameter]
-    public GpioPin Pin {get; set; } = default!;
+    public GpioPin Pin { get; set; } = default!;
 }

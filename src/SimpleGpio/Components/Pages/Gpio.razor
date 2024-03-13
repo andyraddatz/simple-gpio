@@ -2,7 +2,7 @@
 @inject SimpleGpioService _gpio
 @rendermode InteractiveServer
 
-<h1>GPIO Pins</h1>
+<h1>GPIO Pins @(IGpioControllerUser.HasGpioController ? string.Empty : "(Dummy)")</h1>
 
 @foreach (var pin in _gpio.Pins)
 {

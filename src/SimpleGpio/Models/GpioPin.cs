@@ -2,43 +2,39 @@ using System.Device.Gpio;
 
 namespace SimpleGpio.Models;
 
-public class GpioPin(bool hasGpioController, int pinNumber)
+public class GpioPin(int pinNumber) : IGpioControllerUser
 {
-    private readonly bool _hasGpioController = hasGpioController;
-    private bool _dummyPinValue;
-
+    private static bool HasGpioController => IGpioControllerUser.HasGpioController;
+    private GpioController Gpio => (this as IGpioControllerUser).Gpio;
     public int PinNumber { get; } = pinNumber;
+    private bool _dummyPinValue;
     public bool PinValue
     {
         get
         {
-            if (!_hasGpioController) return _dummyPinValue;
+            if (!HasGpioController) return _dummyPinValue;
 
-            using var controller = new GpioController();
-            
-            if (!controller.IsPinOpen(PinNumber))
-                controller.OpenPin(PinNumber, PinMode.Input);
-            else if (controller.GetPinMode(PinNumber) != PinMode.Input)
-                controller.SetPinMode(PinNumber, PinMode.Input);
+            if (!Gpio.IsPinOpen(PinNumber))
+                Gpio.OpenPin(PinNumber, PinMode.Input);
+            else if (Gpio.GetPinMode(PinNumber) != PinMode.Input)
+                Gpio.SetPinMode(PinNumber, PinMode.Input);
 
-            return (bool)controller.Read(PinNumber);
+            return (bool)Gpio.Read(PinNumber);
         }
         set
         {
-            if (!_hasGpioController)
+            if (!HasGpioController)
             {
                 _dummyPinValue = value;
                 return;
             }
 
-            using var controller = new GpioController();
+            if (!Gpio.IsPinOpen(PinNumber))
+                Gpio.OpenPin(PinNumber, PinMode.Output);
+            else if (Gpio.GetPinMode(PinNumber) != PinMode.Output)
+                Gpio.SetPinMode(PinNumber, PinMode.Output);
 
-            if (!controller.IsPinOpen(PinNumber))
-                controller.OpenPin(PinNumber, PinMode.Output);
-            else if (controller.GetPinMode(PinNumber) != PinMode.Output)
-                controller.SetPinMode(PinNumber, PinMode.Output);
-
-            controller.Write(PinNumber, value);
+            Gpio.Write(PinNumber, value);
         }
     }
 }
