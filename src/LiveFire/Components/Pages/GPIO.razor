@@ -1,0 +1,78 @@
+@page "/gpio"
+@attribute [StreamRendering]
+
+<h3>GPIO Pins</h3>
+
+<p>Here you can view the status of your GPIO pins.</p>
+
+@if (pins == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class='table'>
+    <thead>
+        <tr>
+            <th>Pin Number</th>
+            <th>Status</th>
+            <th> Arm/Disarm </th>
+            <th>Fire</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var pin in pins)
+            {
+                @* todo: re-use simplegpio library here *@
+                <tr>
+                    <td>@pin.Number</td>
+                    <td>@pin.Status</td>
+                    <td><button @click=Arm(pin.Number) class="btn btn-primary">@(pin.Status == "Armed" ? "Disarm" : "Arm" )</button></td>
+                    <td><button @click=Fire(pin.Number) disabled="@(pin.Status != "Armed")" class="btn btn-danger">🔥</button></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private Pin[]? pins;
+    private void Arm(int pinNumber)
+    {
+        var pin = pins.FirstOrDefault(p => p.Number == pinNumber);
+        if (pin != null)
+        {
+            pin.Status = pin.Status == "Armed" ? "Disarmed" : "Armed";
+        }
+    }
+
+    private void Fire(int pinNumber)
+    {
+        var pin = pins.FirstOrDefault(p => p.Number == pinNumber);
+        if (pin != null)
+        {
+            @* TODO re-use simplegpio library here *@
+            pin.Status = "Fired";
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Simulate asynchronous loading to demonstrate streaming rendering
+        await Task.Delay(500);
+
+        // Here you would typically load your GPIO pin data
+        // For now, we'll just use some dummy data
+        pins = Enumerable.Range(1, 10).Select(index => new Pin
+            {
+                Number = index,
+                Status = (index % 2 == 0) ? "High" : "Low"
+            }).ToArray();
+    }
+
+    private class Pin
+    {
+        public int Number { get; set; }
+        public string? Status { get; set; }
+    }
+}
